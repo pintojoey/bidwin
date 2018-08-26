@@ -1,24 +1,16 @@
 package bidwin.database;
 
 import bidwin.models.Product;
-import cz.zcu.kiv.server.sqlite.Model.Module;
-import cz.zcu.kiv.server.sqlite.Model.User;
-import cz.zcu.kiv.server.sqlite.SQLiteDB;
 import cz.zcu.kiv.server.sqlite.UserAlreadyExistsException;
-import cz.zcu.kiv.server.sqlite.UserDoesNotExistException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.ws.rs.Produces;
-import java.nio.charset.Charset;
-import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class Products {
-    private static Log logger = LogFactory.getLog(Products.class);
+public class QueryProducts {
+    private static Log logger = LogFactory.getLog(QueryProducts.class);
 
     public static Product addProduct(Product product) throws SQLException, UserAlreadyExistsException {
 
@@ -116,8 +108,8 @@ public class Products {
         } catch (UserAlreadyExistsException e) {
             e.printStackTrace();
         }
-    }
 
+    }
     /*
 
     public static User getUserByEmail(String email) throws SQLException, UserDoesNotExistException {

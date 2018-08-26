@@ -1,8 +1,9 @@
 package bidwin.models;
 
 public class Inventory {
-	
-	private long id;
+
+
+	private long productId;
 	private long retailerId;
 	private long marketId;
 	private double sellNow;
@@ -10,12 +11,15 @@ public class Inventory {
 	private int count;
 	private int scores;
 	
-	public long getId() {
-		return id;
+
+	public long getProductId() {
+		return productId;
 	}
-	public void setId(long id) {
-		this.id = id;
+
+	public void setProductId(long productId) {
+		this.productId = productId;
 	}
+
 	public long getRetailerId() {
 		return retailerId;
 	}
