@@ -1,10 +1,7 @@
 package bidwin.api;
 
 
-import bidwin.database.QueryBid;
-import bidwin.database.QueryCustomers;
-import bidwin.database.QueryOrder;
-import bidwin.database.QueryProducts;
+import bidwin.database.*;
 import bidwin.models.Bid;
 import bidwin.models.Order;
 import bidwin.models.Product;
@@ -13,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.media.multipart.*;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -77,7 +75,7 @@ public class Services {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllOrders(@Context HttpHeaders httpHeaders)  {
         JSONArray ordersArray;
-        List<Order> products = QueryOrder.getAllOrders();
+        List<Order> products = QueryOrder.getAllOpenOrders();
         ordersArray=new JSONArray();
         for(Order order:products){
             ordersArray.put(order.toJSON());
@@ -87,16 +85,34 @@ public class Services {
     }
 
     @GET
-    @Path("/bid/{orderId}")
+    @Path("/orders/{orderId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOrders(@Context HttpHeaders httpHeaders,@PathParam("orderId")long orderId)  {
+        Order order = QueryOrder.getOrder(orderId);
+        return Response.status(200)
+                .entity(order.toJSON().toString(4)).build();
+    }
+
+    @GET
+    @Path("/bids/{orderId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWinningBid(@PathParam("orderId")long orderId,@Context HttpHeaders httpHeaders)  {
         Bid bid=QueryBid.getWinningBid(orderId);
-        return Response.status(200)
+        Order order = QueryOrder.getOrder(orderId);
+        {
+            long closeTime=(order.getDuration()+order.getTimestamp().getTime());
+            if(new Date().getTime()>(closeTime)){
+                QueryOrder.updateOrder(orderId,1);//Status closed
+            }
+        }
+        if(bid!=null)
+            return Response.status(200)
                 .entity(bid.toJSON().toString(4)).build();
+        else return Response.status(200).entity(new JSONObject().toString()).build();
     }
 
     @POST
-    @Path("/bid/{orderId}")
+    @Path("/bids/{orderId}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response makeBid(
@@ -111,8 +127,13 @@ public class Services {
 
         try {
             QueryBid.addBid(bid);
+            Order order = QueryOrder.getOrder(orderId);
+            if(order.getBuyNow()>=price){
+                //wins
+                QueryOrder.updateOrder(orderId,1);//Status closed
+            }
         } catch (SQLException e) {
-            logger.error("user does not exist",e);
+            e.printStackTrace();
             return Response.status(500).entity("Database Error").build();
         }
 

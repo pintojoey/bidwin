@@ -21,7 +21,7 @@ public class QueryOrder {
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("INSERT INTO `orders` (`product_id`, `market_id`, `buynow`, `startbid`, `minrating`) VALUES (?, ?, ?, ?, ?);",
+                    connection.prepareStatement("INSERT INTO `orders` (`product_id`, `market_id`, `buynow`, `startbid`, `minrating`, `duration`) VALUES (?, ?, ?, ?, ?, ?);",
                             Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setLong(1, order.getProductId());
@@ -29,6 +29,7 @@ public class QueryOrder {
             preparedStatement.setDouble(3, order.getBuyNow());
             preparedStatement.setDouble(4, order.getStartBid());
             preparedStatement.setDouble(5, order.getMinRating());
+            preparedStatement.setTimestamp(6, new Timestamp(order.getDuration()));
             preparedStatement.executeUpdate();
 
             ResultSet tableKeys = preparedStatement.getGeneratedKeys();
@@ -55,14 +56,14 @@ public class QueryOrder {
 
     }
 
-    public static List<Order> getAllOrders() {
+    public static List<Order> getAllOpenOrders() {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         List<Order> orders = new ArrayList<>();
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("SELECT * FROM orders;");
+                    connection.prepareStatement("SELECT * FROM orders where status=0;");
 
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -77,6 +78,7 @@ public class QueryOrder {
                 order.setMinRating(resultSet.getInt("minrating"));
                 order.setDuration(resultSet.getTimestamp("duration").getTime());
                 order.setTimestamp(resultSet.getDate("timestamp"));
+                order.setStatus(resultSet.getInt("status"));
                 orders.add(order);
             }
             return orders;
@@ -125,7 +127,8 @@ public class QueryOrder {
                 order.setStartBid(resultSet.getDouble("startbid"));
                 order.setMinRating(resultSet.getInt("minrating"));
                 order.setDuration(resultSet.getTimestamp("duration").getTime());
-                order.setTimestamp(resultSet.getDate("timestamp"));
+                order.setTimestamp(new Date(resultSet.getTimestamp("timestamp").getTime()));
+                order.setStatus(resultSet.getInt("status"));
                 return order;
             }
             return null;
@@ -166,6 +169,42 @@ public class QueryOrder {
             addOrder(order);
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+    }
+
+    public static void updateOrder(long orderId, int status) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = mysqlDB.getInstance().connect();
+            preparedStatement =
+                    connection.prepareStatement("UPDATE orders SET status=? WHERE id=?;");
+            preparedStatement.setInt(1,status);
+            preparedStatement.setLong(2,orderId);
+
+
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e1) {
+                    logger.error(e1);
+                }
+            }
+
         }
 
     }

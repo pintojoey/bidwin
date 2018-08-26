@@ -102,7 +102,8 @@ public class QueryProducts {
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("SELECT * FROM products;" );
+                    connection.prepareStatement("SELECT * FROM products where id =?;" );
+            preparedStatement.setLong(1,id);
 
 
             ResultSet resultSet = preparedStatement.executeQuery();

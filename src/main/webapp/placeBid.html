@@ -35,6 +35,8 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 
+  <script src="dist/js/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
@@ -511,8 +513,8 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Dashboard
-        <small>Control panel</small>
+        <span id="productName"></span>
+        <small id="productDescription">Control panel</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -528,22 +530,22 @@
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3>$150</h3>
+              <h3 id="currentBid">-</h3>
 
               <p>Current Bid</p>
             </div>
             <div class="icon">
               <i class="ion ion-bag"></i>
             </div>
-            <a href="#" class="small-box-footer">By You <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="#" class="small-box-footer" id="byyou">By You <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
-          <div class="small-box bg-green">
+          <div class="small-box bg-green" onclick="placeBid()">
             <div class="inner">
-              <h3>$53</h3>
+              <h3 id="placeBid">-</h3>
 
               <p>Place Bid</p>
             </div>
@@ -806,32 +808,102 @@
 </script>
 <!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- Morris.js charts -->
-<script src="bower_components/raphael/raphael.min.js"></script>
-<script src="bower_components/morris.js/morris.min.js"></script>
-<!-- Sparkline -->
-<script src="bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
-<!-- jvectormap -->
-<script src="plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-<script src="plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-<!-- jQuery Knob Chart -->
-<script src="bower_components/jquery-knob/dist/jquery.knob.min.js"></script>
-<!-- daterangepicker -->
-<script src="bower_components/moment/min/moment.min.js"></script>
-<script src="bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
-<!-- datepicker -->
-<script src="bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<!-- Bootstrap WYSIHTML5 -->
-<script src="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
-<!-- Slimscroll -->
-<script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-<!-- FastClick -->
-<script src="bower_components/fastclick/lib/fastclick.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dist/js/pages/dashboard.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
+
 </body>
+<script>
+  document.getElementById("productName").innerHTML=Cookies.get("productName");
+  document.getElementById("productDescription").innerHTML=Cookies.get("productDescription");
+  updateWinningBid();
+  window.setInterval(updateWinningBid
+  ,500);
+
+  function updateWinningBid(){
+      $.ajax({
+          type: "GET",
+          enctype: 'multipart/form-data',
+          url: "api/services/bids/" + Cookies.get("orderId"),
+          processData: false,
+          contentType: false,
+          cache: false,
+          timeout: 600000,
+          success: function (data) {
+              if (data.id) {
+                  document.getElementById("currentBid").innerHTML="$"+data.price;
+                  if(data.retailerEmail==Cookies.get("email")){
+                      document.getElementById("placeBid").innerHTML=":) You are winning";
+                      document.getElementById("byyou").innerText="BY You";
+                  }
+                  else{
+                      document.getElementById("placeBid").innerHTML="$"+(parseInt(data.price)-5);
+                      document.getElementById("byyou").innerText=":( By someone else";
+                  }
+              }
+              else {
+                  document.getElementById("currentBid").innerHTML="-";
+                  getOrderStatus();
+              }
+          },
+          error: function (e) {
+
+              console.log(e);
+
+          }
+          });
+      }
+
+      function getOrderStatus(){
+          $.ajax({
+              type: "GET",
+              enctype: 'multipart/form-data',
+              url: "api/services/orders/" + Cookies.get("orderId"),
+              processData: false,
+              contentType: false,
+              cache: false,
+              timeout: 600000,
+              success: function (data) {
+                  if (data.status==0) {
+                      document.getElementById("placeBid").innerHTML="$"+data.startBid;
+                  }
+                  if(data.status==1){
+                      document.getElementById("placeBid").innerHTML="Bid Closed";
+                  }
+              },
+              error: function (e) {
+
+                  console.log(e);
+
+              }
+          });
+      }
+
+      function placeBid(){
+      var data = new FormData();
+      data.append("orderId",Cookies.get("orderId"));
+      data.append("price",document.getElementById("placeBid").innerText.substr(1));
+      data.append("retailerEmail",Cookies.get("email"));
+
+          $.ajax({
+              type: "POST",
+              enctype: 'multipart/form-data',
+              url: "api/services/bids/" + Cookies.get("orderId"),
+              processData: false,
+              contentType: false,
+              data: data,
+              cache: false,
+              timeout: 600000,
+              success: function (data) {
+                  updateWinningBid();
+              },
+              error: function (e) {
+
+                  console.log(e);
+
+              }
+          });
+
+      }
+
+  </script>
 </html>

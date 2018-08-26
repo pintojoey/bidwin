@@ -20,7 +20,7 @@ public class QueryBid {
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("INSERT INTO `bidwin`.`bids`(`order_id`,`price`,`retailer_email`)VALUES(?,?,?,?)",
+                    connection.prepareStatement("INSERT INTO `bidwin`.`bids`(`order_id`,`price`,`retailer_email`)VALUES(?,?,?)",
                             Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setLong(1, bid.getOrderId());
@@ -58,7 +58,7 @@ public class QueryBid {
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("SELECT * FROM bid WHERE order_id=? order by `timestamp` DESC limit 1;");
+                    connection.prepareStatement("SELECT * FROM bids WHERE order_id=? order by `timestamp` DESC limit 1;");
             preparedStatement.setLong(1,orderId);
 
 
@@ -66,6 +66,7 @@ public class QueryBid {
 
             if (resultSet.next()) {
                 Bid bid = new Bid();
+                bid.setId(resultSet.getLong("id"));
                 bid.setOrderId(resultSet.getLong("order_id"));
                 bid.setPrice(resultSet.getDouble("price"));
                 bid.setRetailerEmail(resultSet.getString("retailer_email"));

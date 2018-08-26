@@ -20,8 +20,17 @@ public class Order {
 	
 	private long duration;
 	private Date timestamp;
-	
-	public long getId() {
+	private int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public long getId() {
 		return id;
 	}
 	public void setId(long id) {
@@ -81,7 +90,7 @@ public class Order {
 	    JSONObject jsonObject = new JSONObject();
 	    jsonObject.put("id",this.id);
 	    jsonObject.put("productId",this.id);
-        Product product = QueryProducts.getProduct(this.id);
+        Product product = QueryProducts.getProduct(this.productId);
         if(product!=null){
             jsonObject.put("productName",product.getName());
             jsonObject.put("productDescription",product.getDescription());
@@ -93,6 +102,7 @@ public class Order {
 	    jsonObject.put("minRating",this.minRating);
 	    jsonObject.put("duration",new SimpleDateFormat("HH:mm").format(this.duration));
 	    jsonObject.put("timestamp",new SimpleDateFormat().format(this.timestamp));
+	    jsonObject.put("status",this.status);
 	    return jsonObject;
     }
 }
