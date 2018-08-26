@@ -1,5 +1,7 @@
 package bidwin.models;
 
+import org.json.JSONObject;
+
 import java.sql.Date;
 
 public class Order {
@@ -62,7 +64,7 @@ public class Order {
 	public long getDuration() {
 		return duration;
 	}
-	public void setDuration(int duration) {
+	public void setDuration(long duration) {
 		this.duration = duration;
 	}
 	public Date getTimestamp() {
@@ -71,11 +73,6 @@ public class Order {
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
-	
-	
-	
-	
-	
-	
+
 
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 
+import bidwin.api.Services;
 import cz.zcu.kiv.server.UserAccounts;
 import cz.zcu.kiv.server.Workflow;
 import cz.zcu.kiv.server.utilities.config.Conf;
@@ -78,6 +79,7 @@ public class EmbeddedServer{
 
 		ResourceConfig config = new ResourceConfig();
 		config.register(Workflow.class);
+		config.register(Services.class);
 		config.register(UserAccounts.class);
 		config.register(Slf4jLog.class);
 		config.register(MultiPartFeature.class);
@@ -95,7 +97,6 @@ public class EmbeddedServer{
 		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
         String webDir = Resource.newClassPathResource("/webapp").getURI().toString();
 
-        System.out.println(webDir);
 
         resourceHandler.setResourceBase(webDir);
 

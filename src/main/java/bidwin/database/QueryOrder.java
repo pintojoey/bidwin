@@ -14,7 +14,7 @@ import java.util.List;
 public class QueryOrder {
     private static Log logger = LogFactory.getLog(QueryOrder.class);
 
-    public static Order addOrder(Order order) throws SQLException, UserAlreadyExistsException {
+    public static Order addOrder(Order order) throws SQLException {
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -113,8 +113,6 @@ public class QueryOrder {
         try {
             addOrder(order);
         } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (UserAlreadyExistsException e) {
             e.printStackTrace();
         }
 

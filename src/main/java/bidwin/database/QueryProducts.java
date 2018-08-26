@@ -19,7 +19,7 @@ public class QueryProducts {
             try {
                 connection = mysqlDB.getInstance().connect();
                 preparedStatement =
-                        connection.prepareStatement("INSERT INTO `product` (`name`, `description`) VALUES (?, ?);",
+                        connection.prepareStatement("INSERT INTO `products` (`name`, `description`) VALUES (?, ?);",
                                 Statement.RETURN_GENERATED_KEYS);
 
                 preparedStatement.setString(1, product.getName());
@@ -64,6 +64,7 @@ public class QueryProducts {
 
             while(resultSet.next()){
                 Product product = new Product();
+                product.setId(resultSet.getLong("id"));
                 product.setName(resultSet.getString("name"));
                 product.setDescription(resultSet.getString("description"));
                 products.add(product);

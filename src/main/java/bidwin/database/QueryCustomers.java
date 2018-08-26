@@ -1,7 +1,7 @@
 package bidwin.database;
 
+import bidwin.models.Customer;
 import cz.zcu.kiv.server.sqlite.Model.User;
-import cz.zcu.kiv.server.sqlite.SQLiteDB;
 import cz.zcu.kiv.server.sqlite.UserAlreadyExistsException;
 import cz.zcu.kiv.server.sqlite.UserDoesNotExistException;
 import org.apache.commons.logging.Log;
@@ -11,10 +11,10 @@ import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 
-public class Users {
-    private static Log logger = LogFactory.getLog(Users.class);
+public class QueryCustomers {
+    private static Log logger = LogFactory.getLog(QueryCustomers.class);
 
-    public static User addUser(User user) throws SQLException, UserAlreadyExistsException {
+    /*public static User addUser(User user) throws SQLException, UserAlreadyExistsException {
         if(userExists(user.getEmail())){
             throw new UserAlreadyExistsException(user.getEmail());
         }
@@ -60,29 +60,26 @@ public class Users {
 
 
 
-    }
+    }*/
 
-    public static User getUserByEmail(String email) throws SQLException, UserDoesNotExistException {
+    public static Customer getUserByEmail(String email) throws SQLException, UserDoesNotExistException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("SELECT * FROM users WHERE email=?;" );
+                    connection.prepareStatement("SELECT * FROM customers WHERE email=?;" );
 
             preparedStatement.setString(1, email);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()){
-                User user=new User();
-                user.setEmail(resultSet.getString("email"));
-                user.setPassword(resultSet.getString("password"));
-                user.setUsername(resultSet.getString("username"));
-                user.setToken(resultSet.getString("token"));
-                user.setId(resultSet.getLong("id"));
-                user.setActive(resultSet.getBoolean("active"));
-                user.setReset(resultSet.getBoolean("reset"));
-                return user;
+                Customer customer=new Customer();
+                customer.setEmail(resultSet.getString("email"));
+                customer.setId(resultSet.getLong("id"));
+                customer.setBilling(resultSet.getString("billing_info"));
+                customer.setName(resultSet.getString("name"));
+                return customer;
             }
             else throw new UserDoesNotExistException(email);
         }
@@ -104,49 +101,7 @@ public class Users {
 
         }
     }
-
-    public static User updateUser(User user) throws SQLException, UserDoesNotExistException {
-        //Check if user exists
-        User oldUser=getUserByEmail(user.getEmail());
-        {
-            Connection connection = null;
-            PreparedStatement preparedStatement = null;
-            try {
-                connection = mysqlDB.getInstance().connect();
-                preparedStatement =
-                        connection.prepareStatement("UPDATE users SET password=?, token=?, active=?, reset=? WHERE id=?;",
-                                Statement.RETURN_GENERATED_KEYS);
-
-                boolean passwordChanged=!oldUser.getPassword().equals(user.getPassword());
-                preparedStatement.setString(1, passwordChanged?MD5(user.getPassword()):user.getPassword());
-                preparedStatement.setString(2, user.getToken());
-                preparedStatement.setBoolean(3, user.getActive());
-                preparedStatement.setBoolean(4, user.getReset());
-                preparedStatement.setLong(5, user.getId());
-
-                preparedStatement.executeUpdate();
-                return user;
-            }
-            finally {
-                if(preparedStatement!=null) {
-                    try {
-                        preparedStatement.close();
-                    } catch (SQLException e1) {
-                        logger.error(e1);
-                    }
-                }
-                if(connection!=null){
-                    try {
-                        connection.close();
-                    } catch (SQLException e1) {
-                        logger.error(e1);
-                    }
-                }
-            }
-
-        }
-    }
-
+/*
     public static boolean checkAuthorized(String email, String token) throws SQLException{
         try {
             User user=getUserByEmail(email);
@@ -209,5 +164,5 @@ public class Users {
                 sb.append(Integer.toHexString((anArray & 0xFF) | 0x100), 1, 3);
             }
             return sb.toString();
-    }
+    }*/
 }

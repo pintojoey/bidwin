@@ -3,6 +3,7 @@ package bidwin.models;
 public class Customer {
 	
 	private long id;
+	private String email;
 	private String name;
 	private String billing;
 	
@@ -29,7 +30,12 @@ public class Customer {
 	public void setBilling(String billing) {
 		this.billing = billing;
 	}
-	
-	
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

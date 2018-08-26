@@ -1,5 +1,7 @@
 package bidwin.models;
 
+import org.json.JSONObject;
+
 public class Product {
 	
 	private long id;
@@ -23,7 +25,13 @@ public class Product {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	
 
+
+	public JSONObject toJSON() {
+		JSONObject jsonObject=new JSONObject();
+		jsonObject.put("id",this.id);
+		jsonObject.put("name",this.name);
+		jsonObject.put("description",this.description);
+		return jsonObject;
+	}
 }
