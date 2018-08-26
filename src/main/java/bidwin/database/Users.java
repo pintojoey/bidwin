@@ -1,7 +1,9 @@
-package cz.zcu.kiv.server.sqlite;
+package bidwin.database;
 
-import bidwin.database.mysqlDB;
 import cz.zcu.kiv.server.sqlite.Model.User;
+import cz.zcu.kiv.server.sqlite.SQLiteDB;
+import cz.zcu.kiv.server.sqlite.UserAlreadyExistsException;
+import cz.zcu.kiv.server.sqlite.UserDoesNotExistException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,7 +22,7 @@ public class Users {
             Connection connection = null;
             PreparedStatement preparedStatement = null;
             try {
-                connection = SQLiteDB.getInstance().connect();
+                connection = mysqlDB.getInstance().connect();
                 preparedStatement =
                         connection.prepareStatement("INSERT into users (email, password, username, token, reset, active) VALUES (?,?,?,?,?,?);",
                                 Statement.RETURN_GENERATED_KEYS);
@@ -64,7 +66,7 @@ public class Users {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = SQLiteDB.getInstance().connect();
+            connection = mysqlDB.getInstance().connect();
             preparedStatement =
                     connection.prepareStatement("SELECT * FROM users WHERE email=?;" );
 
@@ -110,7 +112,7 @@ public class Users {
             Connection connection = null;
             PreparedStatement preparedStatement = null;
             try {
-                connection = SQLiteDB.getInstance().connect();
+                connection = mysqlDB.getInstance().connect();
                 preparedStatement =
                         connection.prepareStatement("UPDATE users SET password=?, token=?, active=?, reset=? WHERE id=?;",
                                 Statement.RETURN_GENERATED_KEYS);
@@ -161,7 +163,7 @@ public class Users {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = SQLiteDB.getInstance().connect();
+            connection = mysqlDB.getInstance().connect();
             preparedStatement =
                     connection.prepareStatement("SELECT * FROM users WHERE email=?;" );
 
