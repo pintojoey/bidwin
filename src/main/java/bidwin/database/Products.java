@@ -1,15 +1,21 @@
 package bidwin.database;
 
 import bidwin.models.Product;
+import cz.zcu.kiv.server.sqlite.Model.Module;
 import cz.zcu.kiv.server.sqlite.Model.User;
+import cz.zcu.kiv.server.sqlite.SQLiteDB;
 import cz.zcu.kiv.server.sqlite.UserAlreadyExistsException;
 import cz.zcu.kiv.server.sqlite.UserDoesNotExistException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.ws.rs.Produces;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class Products {
     private static Log logger = LogFactory.getLog(Products.class);
@@ -50,9 +56,54 @@ public class Products {
                 }
         }
 
+    }
 
+    public static List<Product> getAllProducts(){
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        List<Product>products=new ArrayList<>();
+        try {
+            connection = mysqlDB.getInstance().connect();
+            preparedStatement =
+                    connection.prepareStatement("SELECT * FROM products;" );
+
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+                Product product = new Product();
+                product.setName(resultSet.getString("name"));
+                product.setDescription(resultSet.getString("description"));
+                products.add(product);
+            }
+            return products;
+
+        }
+        catch (SQLException e){
+            logger.error(e);
+            return products;
+        }
+        finally {
+            if(preparedStatement!=null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e1) {
+                    logger.error(e1);
+                }
+            }
+            if(connection!=null){
+                try {
+                    connection.close();
+                } catch (SQLException e1) {
+                    logger.error(e1);
+                }
+            }
+
+        }
 
     }
+
+
 
     public static void main(String[] args) {
         Product product = new Product();
