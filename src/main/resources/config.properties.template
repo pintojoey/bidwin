@@ -1,0 +1,26 @@
+##### Basic Conf  #####
+server.maxthreads=2
+server.port=8680
+AUTHEnabled=false
+HDFSenabled=false
+
+##### HDFS Confiugration
+
+##HDFS URI with trailing slash
+hdfs.uri=hdfs://localhost:8020/
+hdfs.username=hdfs
+
+###### Email Server Configuration #####
+
+## Copy this as config.properties
+
+fromEmailAddress=
+mail.smtp.host=
+mail.smtp.port=
+mail.smtp.auth=true
+mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
+emailUsername=
+emailPassword=
+
+
+
