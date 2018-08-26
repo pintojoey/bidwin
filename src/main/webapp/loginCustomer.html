@@ -97,7 +97,7 @@
 
   function signin(){
       // Create an FormData object
-      Cookies.set('name', document.getElementById("email").value, { expires: 7 });
+      Cookies.set('email', document.getElementById("email").value, { expires: 7 });
       window.location.href="productsList.html";
       return false;
   }

@@ -21,7 +21,7 @@ public class QueryOrder {
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("INSERT INTO `order` (`product_id`, `market_id`, `buynow`, `startbid`, `minrating`) VALUES (?, ?, ?, ?, ?);",
+                    connection.prepareStatement("INSERT INTO `orders` (`product_id`, `market_id`, `buynow`, `startbid`, `minrating`) VALUES (?, ?, ?, ?, ?);",
                             Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setLong(1, order.getProductId());
@@ -62,31 +62,83 @@ public class QueryOrder {
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("SELECT * FROM order;");
+                    connection.prepareStatement("SELECT * FROM orders;");
 
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 Order order = new Order();
+                order.setId(resultSet.getLong("id"));
                 order.setProductId(resultSet.getLong("product_id"));
                 order.setMarketId(resultSet.getLong("market_id"));
                 order.setBuyNow(resultSet.getDouble("buynow"));
                 order.setStartBid(resultSet.getDouble("startbid"));
                 order.setMinRating(resultSet.getInt("minrating"));
+                order.setDuration(resultSet.getTimestamp("duration").getTime());
+                order.setTimestamp(resultSet.getDate("timestamp"));
                 orders.add(order);
             }
             return orders;
 
         } catch (SQLException e) {
-            logger.error(e);
+            e.printStackTrace();
             return orders;
         } finally {
             if (preparedStatement != null) {
                 try {
                     preparedStatement.close();
                 } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e1) {
                     logger.error(e1);
+                }
+            }
+
+        }
+
+    }
+
+    public static Order getOrder(long orderId) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = mysqlDB.getInstance().connect();
+            preparedStatement =
+                    connection.prepareStatement("SELECT * FROM orders WHERE id=?;");
+            preparedStatement.setLong(1,orderId);
+
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Order order = new Order();
+                order.setId(resultSet.getLong("id"));
+                order.setProductId(resultSet.getLong("product_id"));
+                order.setMarketId(resultSet.getLong("market_id"));
+                order.setBuyNow(resultSet.getDouble("buynow"));
+                order.setStartBid(resultSet.getDouble("startbid"));
+                order.setMinRating(resultSet.getInt("minrating"));
+                order.setDuration(resultSet.getTimestamp("duration").getTime());
+                order.setTimestamp(resultSet.getDate("timestamp"));
+                return order;
+            }
+            return null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
                 }
             }
             if (connection != null) {

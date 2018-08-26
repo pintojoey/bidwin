@@ -22,9 +22,10 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.sql.SQLException;
 
-import static bidwin.database.QueryCustomers.MD5;
+
 import static cz.zcu.kiv.server.Workflow.WORK_FOLDER;
 import static cz.zcu.kiv.server.Workflow.createFolderIfNotExists;
+import static cz.zcu.kiv.server.sqlite.Users.MD5;
 
 @Path("/users")
 public class UserAccounts {

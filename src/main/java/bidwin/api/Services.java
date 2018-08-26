@@ -1,9 +1,11 @@
 package bidwin.api;
 
 
+import bidwin.database.QueryBid;
 import bidwin.database.QueryCustomers;
 import bidwin.database.QueryOrder;
 import bidwin.database.QueryProducts;
+import bidwin.models.Bid;
 import bidwin.models.Order;
 import bidwin.models.Product;
 import cz.zcu.kiv.server.sqlite.UserDoesNotExistException;
@@ -70,18 +72,65 @@ public class Services {
                 .entity(productsArray.toString(4)).build();
     }
 
+    @GET
+    @Path("/orders")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllOrders(@Context HttpHeaders httpHeaders)  {
+        JSONArray ordersArray;
+        List<Order> products = QueryOrder.getAllOrders();
+        ordersArray=new JSONArray();
+        for(Order order:products){
+            ordersArray.put(order.toJSON());
+        }
+        return Response.status(200)
+                .entity(ordersArray.toString(4)).build();
+    }
+
+    @GET
+    @Path("/bid/{orderId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWinningBid(@PathParam("orderId")long orderId,@Context HttpHeaders httpHeaders)  {
+        Bid bid=QueryBid.getWinningBid(orderId);
+        return Response.status(200)
+                .entity(bid.toJSON().toString(4)).build();
+    }
+
+    @POST
+    @Path("/bid/{orderId}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response makeBid(
+            @PathParam("orderId")long orderId,
+            @FormDataParam("retailerEmail") String retailerEmail,
+            @FormDataParam("price") Double price){
+
+        Bid bid = new Bid();
+        bid.setOrderId(orderId);
+        bid.setPrice(price);
+        bid.setRetailerEmail(retailerEmail);
+
+        try {
+            QueryBid.addBid(bid);
+        } catch (SQLException e) {
+            logger.error("user does not exist",e);
+            return Response.status(500).entity("Database Error").build();
+        }
+
+        return Response.status(200)
+                .entity(bid.getId()).build();
+    }
+
     @POST
     @Path("/orders")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response schedule(
             @FormDataParam("productId") int productId,
             @FormDataParam("email") String email,
             @FormDataParam("startingBid") Double startingBid,
             @FormDataParam("buyNowPrice") Double buyNow,
             @FormDataParam("minimumRating") int minRating,
-            @FormDataParam("duration") String duration,
-            @Context HttpHeaders httpHeaders)  {
+            @FormDataParam("duration") String duration)  {
 
 
         Order order = new Order();

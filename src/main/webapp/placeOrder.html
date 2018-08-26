@@ -25,6 +25,8 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
+  <script src="dist/js/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
@@ -524,7 +526,7 @@
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form" onsubmit="return placeOrder()">
+            <form role="form" onsubmit="return false;">
               <div class="box-body">
                 <div class="form-group">
                   <label for="startingBid">Starting Bid</label>
@@ -564,7 +566,7 @@
               <!-- /.box-body -->
 
               <div class="box-footer">
-                <button type="submit" class="btn btn-primary">Place Order</button>
+                <button class="btn btn-primary" onclick="placeOrder()">Place Order</button>
               </div>
             </form>
           </div>
@@ -810,32 +812,34 @@
         data.append("duration",document.getElementById("duration").value);
 
 
+
         $.ajax({
             type: "POST",
             enctype: 'multipart/form-data',
-            url: "api/service/order",
+            url: "api/services/orders",
             data: data,
             processData: false,
             contentType: false,
             cache: false,
             timeout: 600000,
             success: function (data) {
-                if(data.id){
-                    alert("Your order id "+data.id+ "has been placed");
+                if(data){
+                    alert("Your order id "+data+ " has been placed");
                 }
                 else{
-                    alertify.notify("Server Error", 'error', 3);
+                    alert("Server Error!");
                 }
             },
             error: function (e) {
                 if(e.status===403)
-                    alertify.notify("Unauthorized, Try again", 'error', 3);
+                    alert("Unauthorized, Try again");
                 else
-                    alertify.notify("Some error occurred", 'error', 3);
+                    alert("Some error occurred"+e);
 
 
             }
         });
+        return false;
     }
 </script>
 </body>

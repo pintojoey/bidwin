@@ -1,14 +1,17 @@
 package bidwin.models;
 
+import org.json.JSONObject;
+
 import java.sql.Date;
 
 public class Bid {
 	
 	private long id;
 	private long orderId;
-	private long inventoryId;
+//	private long inventoryId;
 	private double price;
 	private Date timestamp;
+	private String retailerEmail;
 	
 	public long getId() {
 		return id;
@@ -22,12 +25,12 @@ public class Bid {
 	public void setOrderId(long orderId) {
 		this.orderId = orderId;
 	}
-	public long getInventoryId() {
-		return inventoryId;
-	}
-	public void setInventoryId(long inventoryId) {
-		this.inventoryId = inventoryId;
-	}
+//	public long getInventoryId() {
+//		return inventoryId;
+//	}
+//	public void setInventoryId(long inventoryId) {
+//		this.inventoryId = inventoryId;
+//	}
 	public double getPrice() {
 		return price;
 	}
@@ -40,5 +43,22 @@ public class Bid {
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+
+	public String getRetailerEmail() {
+		return retailerEmail;
+	}
+
+	public void setRetailerEmail(String retailerEmail) {
+		this.retailerEmail = retailerEmail;
+	}
+
+	public JSONObject toJSON() {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("id",this.id);
+		jsonObject.put("orderId",this.orderId);
+		jsonObject.put("price",this.price);
+		jsonObject.put("timestamp",this.timestamp);
+		jsonObject.put("retailerEmail",this.retailerEmail);
+		return jsonObject;
+	}
 }

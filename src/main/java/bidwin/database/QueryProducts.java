@@ -96,7 +96,49 @@ public class QueryProducts {
 
     }
 
+    public static Product getProduct(long id) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = mysqlDB.getInstance().connect();
+            preparedStatement =
+                    connection.prepareStatement("SELECT * FROM products;" );
 
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                Product product = new Product();
+                product.setId(resultSet.getLong("id"));
+                product.setName(resultSet.getString("name"));
+                product.setDescription(resultSet.getString("description"));
+                return product;
+            }
+            else return null;
+
+        }
+        catch (SQLException e){
+            logger.error(e);
+            return null;
+        }
+        finally {
+            if(preparedStatement!=null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e1) {
+                    logger.error(e1);
+                }
+            }
+            if(connection!=null){
+                try {
+                    connection.close();
+                } catch (SQLException e1) {
+                    logger.error(e1);
+                }
+            }
+
+        }
+    }
 
     public static void main(String[] args) {
         Product product = new Product();

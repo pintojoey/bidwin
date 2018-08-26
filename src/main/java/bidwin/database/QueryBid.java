@@ -13,19 +13,19 @@ import java.util.List;
 public class QueryBid {
     private static Log logger = LogFactory.getLog(QueryBid.class);
 
-    public static Bid addBid(Bid bid) throws SQLException, UserAlreadyExistsException {
+    public static Bid addBid(Bid bid) throws SQLException{
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("INSERT INTO `bid` (`order_id`, `inventory_id`, `price`) VALUES (?, ?, ?);",
+                    connection.prepareStatement("INSERT INTO `bidwin`.`bids`(`order_id`,`price`,`retailer_email`)VALUES(?,?,?,?)",
                             Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setLong(1, bid.getOrderId());
-            preparedStatement.setLong(2, bid.getInventoryId());
-            preparedStatement.setDouble(3, bid.getPrice());
+            preparedStatement.setDouble(2, bid.getPrice());
+            preparedStatement.setString(3,bid.getRetailerEmail());
             preparedStatement.executeUpdate();
 
             ResultSet tableKeys = preparedStatement.getGeneratedKeys();
@@ -52,30 +52,30 @@ public class QueryBid {
 
     }
 
-    public static List<Bid> getAllBids() {
+    public static Bid getWinningBid(long orderId) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
-        List<Bid> bids = new ArrayList<>();
         try {
             connection = mysqlDB.getInstance().connect();
             preparedStatement =
-                    connection.prepareStatement("SELECT * FROM bid;");
+                    connection.prepareStatement("SELECT * FROM bid WHERE order_id=? order by `timestamp` DESC limit 1;");
+            preparedStatement.setLong(1,orderId);
 
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 Bid bid = new Bid();
                 bid.setOrderId(resultSet.getLong("order_id"));
-                bid.setInventoryId(resultSet.getLong("inventory_id"));
                 bid.setPrice(resultSet.getDouble("price"));
-                bids.add(bid);
+                bid.setRetailerEmail(resultSet.getString("retailer_email"));
+                return bid;
             }
-            return bids;
+            return null;
 
         } catch (SQLException e) {
             logger.error(e);
-            return bids;
+            return null;
         } finally {
             if (preparedStatement != null) {
                 try {
@@ -100,13 +100,10 @@ public class QueryBid {
     public static void main(String[] args) {
         Bid bid = new Bid();
         bid.setOrderId(123);
-        bid.setInventoryId(456);
         bid.setPrice(400);
         try {
             addBid(bid);
         } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (UserAlreadyExistsException e) {
             e.printStackTrace();
         }
 

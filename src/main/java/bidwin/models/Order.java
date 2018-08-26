@@ -1,8 +1,10 @@
 package bidwin.models;
 
+import bidwin.database.QueryProducts;
 import org.json.JSONObject;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class Order {
 	
@@ -75,4 +77,22 @@ public class Order {
 	}
 
 
+    public JSONObject toJSON() {
+	    JSONObject jsonObject = new JSONObject();
+	    jsonObject.put("id",this.id);
+	    jsonObject.put("productId",this.id);
+        Product product = QueryProducts.getProduct(this.id);
+        if(product!=null){
+            jsonObject.put("productName",product.getName());
+            jsonObject.put("productDescription",product.getDescription());
+        }
+	    jsonObject.put("marketId",this.marketId);
+	    jsonObject.put("customerId",this.customerId);
+	    jsonObject.put("buyNow",this.buyNow);
+	    jsonObject.put("startBid",this.startBid);
+	    jsonObject.put("minRating",this.minRating);
+	    jsonObject.put("duration",new SimpleDateFormat("HH:mm").format(this.duration));
+	    jsonObject.put("timestamp",new SimpleDateFormat().format(this.timestamp));
+	    return jsonObject;
+    }
 }
