@@ -368,6 +368,8 @@
                   <th>Buy Now</th>
                   <th>Duration</th>
                   <th>Time</th>
+                  <th>Price</th>
+                  <th>Retailer</th>
               
                 </tr>
                 </thead>
@@ -616,7 +618,7 @@
           'info'        : true,
           'autoWidth'   : false,
           ajax: {
-              url: 'api/services/orders',
+              url: 'api/services/users/orders/'+Cookies.get("email"),
               method: "GET",
               dataSrc: function ( json ) {
                   return json;
@@ -629,16 +631,12 @@
               { data: "productDescription"},
               { data: "buyNow"},
               { data: "duration" },
-              { data: "timestamp" }
+              { data: "timestamp" },
+              { data: "price" },
+              { data: "retailer" }
           ]
       });
-      $('#example1 tbody').on('click', 'tr', function () {
-          var data = table.row( this ).data();
-          Cookies.set("orderId",data.id);
-          Cookies.set("productName",data.productName);
-          Cookies.set("productDescription",data.productDescription);
-          window.location.href="placeBid.html";
-      } );
+
   })
 </script>
 </body>

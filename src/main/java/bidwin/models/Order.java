@@ -1,5 +1,6 @@
 package bidwin.models;
 
+import bidwin.database.QueryBid;
 import bidwin.database.QueryProducts;
 import org.json.JSONObject;
 
@@ -106,5 +107,37 @@ public class Order {
 	    jsonObject.put("timestamp",new SimpleDateFormat().format(this.timestamp));
 	    jsonObject.put("status",this.status);
 	    return jsonObject;
+    }
+
+    public JSONObject toCompletedJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id",this.id);
+        jsonObject.put("productId",this.id);
+        Product product = QueryProducts.getProduct(this.productId);
+        if(product!=null){
+            jsonObject.put("productName",product.getName());
+            jsonObject.put("productDescription",product.getDescription());
+        }
+        jsonObject.put("marketId",this.marketId);
+        jsonObject.put("customerId",this.customerId);
+        jsonObject.put("buyNow",this.buyNow);
+        jsonObject.put("startBid",this.startBid);
+        jsonObject.put("minRating",this.minRating);
+        jsonObject.put("duration",new SimpleDateFormat("HH:mm").format(this.duration));
+        jsonObject.put("durationMs",this.duration);
+
+        jsonObject.put("timestamp",new SimpleDateFormat().format(this.timestamp));
+        jsonObject.put("status",this.status);
+        Bid bid=QueryBid.getWinningBid(this.id);
+        if(bid!=null && this.status==1){
+            jsonObject.put("price",bid.getPrice());
+            jsonObject.put("retailer",bid.getRetailerEmail());
+        }
+        else{
+            jsonObject.put("price","");
+            jsonObject.put("retailer","");
+        }
+
+        return jsonObject;
     }
 }

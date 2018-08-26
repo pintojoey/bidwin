@@ -94,6 +94,20 @@ public class Services {
     }
 
     @GET
+    @Path("users/orders/{userEmail}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOrders(@Context HttpHeaders httpHeaders,@PathParam("userEmail")String email)  {
+        JSONArray ordersArray;
+        List<Order> products = QueryOrder.getOrdersByEmail(email);
+        ordersArray=new JSONArray();
+        for(Order order:products){
+            ordersArray.put(order.toCompletedJSON());
+        }
+        return Response.status(200)
+                .entity(ordersArray.toString(4)).build();
+    }
+
+    @GET
     @Path("/bids/{orderId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWinningBid(@PathParam("orderId")long orderId,@Context HttpHeaders httpHeaders)  {
