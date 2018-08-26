@@ -1,0 +1,53 @@
+CREATE TABLE `bid` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) DEFAULT NULL,
+  `inventory_id` int(11) DEFAULT NULL,
+  `price` double DEFAULT NULL,
+  `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE `customer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `billinginfo` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE `inventory` (
+  `product_id` int(11) NOT NULL,
+  `retailer_id` int(11) NOT NULL,
+  `market_id` varchar(45) NOT NULL,
+  `sellnow` double DEFAULT NULL,
+  `minprice` double DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  `scores` double DEFAULT NULL,
+  PRIMARY KEY (`product_id`,`retailer_id`,`market_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE `market` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `description` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE `order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) DEFAULT NULL,
+  `market_id` varchar(45) DEFAULT NULL,
+  `buynow` double DEFAULT NULL,
+  `startbid` double DEFAULT NULL,
+  `duration` decimal(10,0) DEFAULT NULL,
+  `minrating` int(11) DEFAULT NULL,
+  `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE `product` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `description` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+CREATE TABLE `retailer` (
+  `retailer` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `description` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`retailer`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
