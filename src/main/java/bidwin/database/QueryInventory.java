@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QueryInventory {
-    private static Log logger = LogFactory.getLog(QueryProducts.class);
+    private static Log logger = LogFactory.getLog(QueryInventory.class);
 
     public static Inventory addInventory(Inventory inventory) throws SQLException, UserAlreadyExistsException {
 
