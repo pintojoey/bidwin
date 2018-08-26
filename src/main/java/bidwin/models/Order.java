@@ -101,6 +101,8 @@ public class Order {
 	    jsonObject.put("startBid",this.startBid);
 	    jsonObject.put("minRating",this.minRating);
 	    jsonObject.put("duration",new SimpleDateFormat("HH:mm").format(this.duration));
+        jsonObject.put("durationMs",this.duration);
+
 	    jsonObject.put("timestamp",new SimpleDateFormat().format(this.timestamp));
 	    jsonObject.put("status",this.status);
 	    return jsonObject;

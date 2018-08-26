@@ -94,7 +94,7 @@ public class EmbeddedServer{
 		contextHandler.setHandler(server.getHandler());
 		contextHandler.setInitParameter(ServerProperties.PROVIDER_CLASSNAMES, MultiPartFeature.class.getCanonicalName());
 		ResourceHandler resourceHandler = new ResourceHandler();
-		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+		resourceHandler.setWelcomeFiles(new String[] { "loginCustomer.html" });
         String webDir = Resource.newClassPathResource("/webapp").getURI().toString();
 
 

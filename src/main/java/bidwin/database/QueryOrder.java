@@ -77,7 +77,7 @@ public class QueryOrder {
                 order.setStartBid(resultSet.getDouble("startbid"));
                 order.setMinRating(resultSet.getInt("minrating"));
                 order.setDuration(resultSet.getTimestamp("duration").getTime());
-                order.setTimestamp(resultSet.getDate("timestamp"));
+                order.setTimestamp(new Date(resultSet.getTimestamp("timestamp").getTime()));
                 order.setStatus(resultSet.getInt("status"));
                 orders.add(order);
             }
